@@ -7,6 +7,7 @@ import {
   Col,
   Form,
   FormGroup,
+  Modal,
   Row,
   Stack,
 } from "react-bootstrap";
@@ -17,13 +18,19 @@ import { RawNote, Tag } from "./models/tag";
 interface NoteListProps {
   availableTags: Tag[];
   notes: SimplifiedNote[];
+  updateTag: (id: string, label: string) => void;
+  deleteTag: (id: string) => void;
 }
 
-const NoteList = ({ availableTags, notes }: NoteListProps) => {
+const NoteList = ({
+  availableTags,
+  notes,
+  updateTag,
+  deleteTag,
+}: NoteListProps) => {
   const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
   const [title, setTitle] = useState("");
-
-  
+  const [showModal, setShowModal] = useState(false);
 
   //   const filteredNotes = availableNotes.filter((note) =>
   //     note.title.toLocaleLowerCase().includes(title.toLocaleLowerCase())
@@ -40,7 +47,11 @@ const NoteList = ({ availableTags, notes }: NoteListProps) => {
           ))
       );
     });
-  }, [title, selectedTags]);
+  }, [title, selectedTags, notes]);
+
+  const toggleModalHandler = () => {
+    setShowModal((prev) => !prev);
+  };
 
   return (
     <>
@@ -53,7 +64,9 @@ const NoteList = ({ availableTags, notes }: NoteListProps) => {
             <Link to="/new">
               <Button variant="primary">Create</Button>
             </Link>
-            <Button variant="outline-secondary">Edit Tags</Button>
+            <Button variant="outline-secondary" onClick={toggleModalHandler}>
+              Edit Tags
+            </Button>
           </Stack>
         </Col>
       </Row>
@@ -106,7 +119,65 @@ const NoteList = ({ availableTags, notes }: NoteListProps) => {
           );
         })}
       </Row>
+      <EditTagsModal
+        updateTag={updateTag}
+        deleteTag={deleteTag}
+        show={showModal}
+        tags={availableTags}
+        toggleModal={toggleModalHandler}
+      />
     </>
+  );
+};
+
+interface EditTagsModal {
+  tags: Tag[];
+  show: boolean;
+  toggleModal: () => void;
+  updateTag: (id: string, label: string) => void;
+  deleteTag: (id: string) => void;
+}
+
+const EditTagsModal = ({
+  tags,
+  show,
+  toggleModal,
+  deleteTag,
+  updateTag,
+}: EditTagsModal) => {
+  return (
+    <Modal show={show} onHide={toggleModal}>
+      <Modal.Header closeButton>
+        <Modal.Title>Edit Tags</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <Form>
+          <Stack gap={2}>
+            {tags.map((tag) => (
+              <Row key={tag.id}>
+                <Col>
+                  <Form.Control
+                    type="text"
+                    value={tag.label}
+                    onChange={(e) => {
+                      updateTag(tag.id, e.target.value);
+                    }}
+                  />
+                </Col>
+                <Col xs="auto">
+                  <Button
+                    variant="outline-danger"
+                    onClick={deleteTag.bind(null, tag.id)}
+                  >
+                    &times;
+                  </Button>
+                </Col>
+              </Row>
+            ))}
+          </Stack>
+        </Form>
+      </Modal.Body>
+    </Modal>
   );
 };
 

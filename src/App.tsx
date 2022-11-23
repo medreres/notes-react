@@ -41,6 +41,19 @@ function App() {
     setTags((prev) => [...prev, tag]);
   };
 
+  const updateTag = (id: string, label: string) => {
+    setTags(prevState => prevState.map(tag => {
+      if (tag.id === id) {
+        return {id: id, label: label}
+      }
+      return tag;
+    }));
+  }
+
+  const deleteTag = (id: string) => {
+    setTags(prevState => prevState.filter(tag => tag.id !== id));
+  }
+
   const onUpdateNote = (id: string, { tags, ...data }: NoteData) => {
     setNotes((prevNotes) => {
       return prevNotes.map(note => {
@@ -58,7 +71,11 @@ function App() {
       <Routes>
         <Route
           path="/"
-          element={<NoteList availableTags={tags} notes={notesWithTags} />}
+          element={<NoteList
+            updateTag={updateTag}
+            deleteTag={deleteTag}
+             availableTags={tags}
+              notes={notesWithTags} />}
         />
         <Route
           path="/new"
