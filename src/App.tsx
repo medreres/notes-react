@@ -33,36 +33,38 @@ function App() {
     });
   };
 
-  const deleteNoteHandler = (id:string) => {
-    setNotes(prevNotes => prevNotes.filter(note => note.id !== id));
-  }
+  const deleteNoteHandler = (id: string) => {
+    setNotes((prevNotes) => prevNotes.filter((note) => note.id !== id));
+  };
 
   const addTag = (tag: Tag) => {
     setTags((prev) => [...prev, tag]);
   };
 
   const updateTag = (id: string, label: string) => {
-    setTags(prevState => prevState.map(tag => {
-      if (tag.id === id) {
-        return {id: id, label: label}
-      }
-      return tag;
-    }));
-  }
+    setTags((prevState) =>
+      prevState.map((tag) => {
+        if (tag.id === id) {
+          return { id: id, label: label };
+        }
+        return tag;
+      })
+    );
+  };
 
   const deleteTag = (id: string) => {
-    setTags(prevState => prevState.filter(tag => tag.id !== id));
-  }
+    setTags((prevState) => prevState.filter((tag) => tag.id !== id));
+  };
 
   const onUpdateNote = (id: string, { tags, ...data }: NoteData) => {
     setNotes((prevNotes) => {
-      return prevNotes.map(note => {
+      return prevNotes.map((note) => {
         if (note.id === id) {
-          return {...note, ...data, tagsIds: tags.map((tag) => tag.id) }
+          return { ...note, ...data, tagsIds: tags.map((tag) => tag.id) };
         } else {
           return note;
         }
-      })
+      });
     });
   };
 
@@ -71,11 +73,14 @@ function App() {
       <Routes>
         <Route
           path="/"
-          element={<NoteList
-            updateTag={updateTag}
-            deleteTag={deleteTag}
-             availableTags={tags}
-              notes={notesWithTags} />}
+          element={
+            <NoteList
+              updateTag={updateTag}
+              deleteTag={deleteTag}
+              availableTags={tags}
+              notes={notesWithTags}
+            />
+          }
         />
         <Route
           path="/new"
